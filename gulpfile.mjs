@@ -2,16 +2,15 @@ import gulp from 'gulp';
 import watch from 'gulp-watch';
 import browserSync from 'browser-sync';
 import gulpSass from 'gulp-sass';
-import * as sass from 'sass'
 import concat from 'gulp-concat';
 import terser from 'gulp-terser';
 import cleanCss from 'gulp-clean-css';
 import autoPrefixer from 'gulp-autoprefixer';
 import clean from 'gulp-clean';
+import fs from 'fs';
 
 const src = 'src/';
 const dist = 'dist/';
-const sassAll = gulpSass(sass);
 
 function styles() {
   return gulp.src('app/scss/style.scss')
@@ -19,7 +18,7 @@ function styles() {
     .pipe(concat('style.min.css'))
     .pipe(cleanCss({ compatibility: 'ie8' }))
     .pipe(gulp.dest('app/css'))
-    .pipe(browserSync.stream())
+    .pipe(browserSync.stream());
 }
 
 function scripts() {
@@ -27,44 +26,50 @@ function scripts() {
     .pipe(concat('main.min.js'))
     .pipe(terser())
     .pipe(gulp.dest('app/js'))
-    .pipe(browserSync.stream())
+    .pipe(browserSync.stream());
 }
 
 function watcher() {
-  watch(['app/**/*.scss'], styles)
-  watch(['app/**/*.js'], scripts)
-  watch(['app/**/*.html']).on('change', browserSync.reload)
+  watch(['app/**/*.scss'], styles);
+  watch(['app/**/*.js'], scripts);
+  watch(['app/**/*.html']).on('change', browserSync.reload);
 }
 
 function browserUpdate() {
   browserSync.init({
     server: {
-      baseDir: "app"
+      baseDir: "app",
     },
     port: 8080,
     notify: false,
-    open: true
+    open: true,
   });
 }
 
 function cleanDist() {
-  return gulp.src('dist')
-    .pipe(clean())
+  if (!fs.existsSync(dist)) {
+    fs.mkdirSync(dist, { recursive: true });
+  }
+  return gulp.src(`${dist}/**/*`, { read: false }).pipe(clean());
 }
 
 function building() {
   return gulp.src([
     'app/css/style.min.css',
     'app/js/main.min.js',
-    'app/**/*.html'
-  ], { base: 'app' })
-    .pipe(gulp.dest(dist))
+    'app/**/*.html',
+  ], { base: 'app' }).pipe(gulp.dest(dist));
 }
 
-function build() {
-  return gulp.series(cleanDist(), building())
+async function build() {
+  try {
+    await cleanDist();
+    await building();
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-export { styles, scripts, watcher, browserUpdate, build }
+export { styles, scripts, watcher, browserUpdate, cleanDist, building, build };
 
-export default gulp.task('default', gulp.series(gulp.parallel(styles, scripts, watcher, browserUpdate)));
+export default gulp.series(gulp.parallel(styles, scripts, watcher, browserUpdate));
