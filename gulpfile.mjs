@@ -1,16 +1,24 @@
 import gulp from 'gulp';
 import watch from 'gulp-watch';
 import browserSync from 'browser-sync';
-import gulpSass from 'gulp-sass';
 import concat from 'gulp-concat';
 import terser from 'gulp-terser';
 import cleanCss from 'gulp-clean-css';
 import autoPrefixer from 'gulp-autoprefixer';
 import clean from 'gulp-clean';
 import fs from 'fs';
+import webp from 'gulp-webp';
+import avif from 'gulp-avif';
+import imagemin from 'gulp-imagemin';
+import cached from 'gulp-cached';
 
-const src = 'src/';
 const dist = 'dist/';
+
+function images() {
+  return gulp.src(['app/img/*.*', '!app/img/svg/.*svg'])
+    .pipe(avif({quality:90}))
+    .pipe(gulp.dest('app/img/dist'))
+}
 
 function styles() {
   return gulp.src('app/scss/style.scss')
@@ -30,12 +38,6 @@ function scripts() {
 }
 
 function watcher() {
-  watch(['app/**/*.scss'], styles);
-  watch(['app/**/*.js'], scripts);
-  watch(['app/**/*.html']).on('change', browserSync.reload);
-}
-
-function browserUpdate() {
   browserSync.init({
     server: {
       baseDir: "app",
@@ -44,6 +46,9 @@ function browserUpdate() {
     notify: false,
     open: true,
   });
+  watch(['app/**/*.scss'], styles);
+  watch(['app/**/*.js'], scripts);
+  watch(['app/**/*.html']).on('change', browserSync.reload);
 }
 
 function cleanDist() {
@@ -70,6 +75,6 @@ async function build() {
   }
 }
 
-export { styles, scripts, watcher, browserUpdate, cleanDist, building, build };
+export { styles, scripts, watcher, cleanDist, building, build, images };
 
-export default gulp.series(gulp.parallel(styles, scripts, watcher, browserUpdate));
+export default gulp.series(gulp.parallel(images, styles, scripts, watcher));
