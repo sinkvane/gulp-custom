@@ -2,6 +2,8 @@
 
 import gulp from 'gulp';
 import watch from 'gulp-watch';
+import gulpSass from 'gulp-sass';
+import * as sass from 'sass'
 import browserSync from 'browser-sync';
 import concat from 'gulp-concat';
 import terser from 'gulp-terser';
@@ -11,11 +13,13 @@ import clean from 'gulp-clean';
 import imagemin, { optipng, mozjpeg, svgo } from 'gulp-imagemin';
 import imageminAvif from 'imagemin-avif';
 import imageminWebp from 'imagemin-webp';
+import svgSprite from 'gulp-svg-sprite';
 import fs from 'fs';
 import rename from 'gulp-rename';
 import newer from 'gulp-newer';
 
 const dist = 'dist/';
+const sassAll = gulpSass(sass);
 
 function img() {
   return gulp.src(['app/img/**/*.*', '!app/img/svg/*.svg'], { encoding: false })
@@ -39,8 +43,29 @@ function img() {
     .pipe(gulp.dest('app/dist/img/webp'))
 }
 
+function svg() {
+  return gulp.src('app/img/svg/*.svg')
+    .pipe(imagemin([svgo()]))
+    .pipe(svgSprite({
+      shape: {
+        dimension: {
+          maxHeight: 50,
+          maxWidth: 50
+        }
+      },
+      mode: {
+        stack: {
+          sprite: '../sprite.svg',
+          example: true,
+        }
+      }
+    }))
+    .pipe(gulp.dest('app/dist/img/svg'))
+}
+
 function styles() {
   return gulp.src('app/scss/style.scss')
+    .pipe(sassAll())
     .pipe(autoPrefixer())
     .pipe(concat('style.min.css'))
     .pipe(cleanCss({ compatibility: 'ie8' }))
@@ -56,13 +81,6 @@ function scripts() {
     .pipe(browserSync.stream());
 }
 
-function watcher() {
-  watch(['app/**/*.scss'], styles);
-  watch(['app/img/**/*.*'], img);
-  watch(['app/**/*.js'], scripts);
-  watch(['app/**/*.html']).on('change', browserSync.reload);
-}
-
 function browserUpdate() {
   browserSync.init({
     server: {
@@ -74,6 +92,7 @@ function browserUpdate() {
   });
   watch(['app/**/*.scss'], styles);
   watch(['app/**/*.js'], scripts);
+  watch(['app/img/**/*.*'], img);
   watch(['app/**/*.html']).on('change', browserSync.reload);
 }
 
@@ -88,7 +107,8 @@ function building() {
   return gulp.src([
     'app/css/style.min.css',
     'app/js/main.min.js',
-    'app/**/*.html',
+    'app/dist/img/**/*.*',
+    'app/**/*.html'
   ], { base: 'app' }).pipe(gulp.dest(dist))
 }
 
@@ -101,6 +121,6 @@ async function build() {
   }
 }
 
-export { styles, scripts, watcher, browserUpdate, cleanDist, building, build, img };
+export { styles, scripts, browserUpdate, cleanDist, building, build, img, svg };
 
-export default gulp.series(gulp.parallel(images, styles, scripts, watcher));
+export default gulp.series(gulp.parallel(styles, scripts, browserUpdate));

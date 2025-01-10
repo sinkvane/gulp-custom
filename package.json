@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "gulp task runner",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,6 +24,7 @@
     "gulp-newer": "^1.4.0",
     "gulp-rename": "^2.0.0",
     "gulp-sass": "^6.0.0",
+    "gulp-svg-sprite": "^2.0.3",
     "gulp-terser": "^2.1.0",
     "gulp-watch": "^5.0.1",
     "gulp-webp": "^5.0.0",
