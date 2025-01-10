@@ -1,3 +1,5 @@
+'use strict'
+
 import gulp from 'gulp';
 import watch from 'gulp-watch';
 import browserSync from 'browser-sync';
@@ -6,18 +8,35 @@ import terser from 'gulp-terser';
 import cleanCss from 'gulp-clean-css';
 import autoPrefixer from 'gulp-autoprefixer';
 import clean from 'gulp-clean';
+import imagemin, { optipng, mozjpeg, svgo } from 'gulp-imagemin';
+import imageminAvif from 'imagemin-avif';
+import imageminWebp from 'imagemin-webp';
 import fs from 'fs';
-import webp from 'gulp-webp';
-import avif from 'gulp-avif';
-import imagemin from 'gulp-imagemin';
-import cached from 'gulp-cached';
+import rename from 'gulp-rename';
+import newer from 'gulp-newer';
 
 const dist = 'dist/';
 
-function images() {
-  return gulp.src(['app/img/*.*', '!app/img/svg/.*svg'])
-    .pipe(avif({quality:90}))
-    .pipe(gulp.dest('app/img/dist'))
+function img() {
+  return gulp.src(['app/img/**/*.*', '!app/img/svg/*.svg'], { encoding: false })
+    
+    .pipe(newer('app/dist/img/minimized'))
+    .pipe(imagemin([mozjpeg(), optipng(), svgo()]))
+    .pipe(gulp.dest('app/dist/img/minimized'))
+    
+    .pipe(newer('app/dist/img/avif'))
+    .pipe(imagemin([imageminAvif({ quality: 80 })]))
+    .pipe(rename(function (path) {
+      path.extname = '.avif';
+    }))
+    .pipe(gulp.dest('app/dist/img/avif'))
+
+    .pipe(newer('app/dist/img/webp'))
+    .pipe(imagemin([imageminWebp({ quality: 80 })]))
+    .pipe(rename(function (path) {
+      path.extname = '.webp';
+    }))
+    .pipe(gulp.dest('app/dist/img/webp'))
 }
 
 function styles() {
@@ -38,6 +57,13 @@ function scripts() {
 }
 
 function watcher() {
+  watch(['app/**/*.scss'], styles);
+  watch(['app/img/**/*.*'], img);
+  watch(['app/**/*.js'], scripts);
+  watch(['app/**/*.html']).on('change', browserSync.reload);
+}
+
+function browserUpdate() {
   browserSync.init({
     server: {
       baseDir: "app",
@@ -63,7 +89,7 @@ function building() {
     'app/css/style.min.css',
     'app/js/main.min.js',
     'app/**/*.html',
-  ], { base: 'app' }).pipe(gulp.dest(dist));
+  ], { base: 'app' }).pipe(gulp.dest(dist))
 }
 
 async function build() {
@@ -75,6 +101,6 @@ async function build() {
   }
 }
 
-export { styles, scripts, watcher, cleanDist, building, build, images };
+export { styles, scripts, watcher, browserUpdate, cleanDist, building, build, img };
 
 export default gulp.series(gulp.parallel(images, styles, scripts, watcher));
