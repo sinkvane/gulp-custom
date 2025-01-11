@@ -1,6 +1,6 @@
 {
-  "name": "gulp-mine",
-  "version": "1.0.0",
+  "name": "gulp-custom",
+  "version": "1.0.4",
   "description": "gulp task runner",
   "main": "index.js",
   "type": "module",
@@ -32,6 +32,9 @@
     "imagemin-svgo": "^11.0.1",
     "imagemin-webp": "^8.0.0",
     "sass": "^1.83.0"
+  },
+  "exports": {
+    "./gulp/tasks/*": "./gulp/tasks/*"
   },
   "dependencies": {
     "normalize.css": "^8.0.1"
