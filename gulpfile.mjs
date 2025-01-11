@@ -63,7 +63,7 @@ function svg() {
 }
 
 function styles() {
-  return src('app/scss/style.scss')
+  return src('app/scss/**/*.*{css,scss}')
     .pipe(sassAll())
     .pipe(autoPrefixer())
     .pipe(concat('style.min.css'))
@@ -73,7 +73,7 @@ function styles() {
 }
 
 function scripts() {
-  return src('app/js/main.js')
+  return src('app/js/src/main.js')
     .pipe(concat('main.min.js'))
     .pipe(terser())
     .pipe(dest('app/js'))
@@ -89,10 +89,10 @@ function browserUpdate() {
     notify: false,
     open: true,
   });
-  watch(['app/**/*.scss'], styles);
-  watch(['app/**/*.js'], scripts);
-  watch(['app/img/**/*.*'], img);
-  watch(['app/img/svg/*.svg'], svg);
+  watch(['app/scss/**/*.scss'], styles);
+  watch(['app/js/src/**/*.js'], scripts);
+  watch(['app/img/src/**/*.*'], img);
+  watch(['app/img/src/svg/**/*.svg'], svg);
   watch(['app/**/*.html']).on('change', browserSync.reload);
 }
 
