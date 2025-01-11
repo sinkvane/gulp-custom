@@ -1,6 +1,6 @@
 'use strict'
 
-import gulp from 'gulp';
+import {src, dest, series, parallel } from 'gulp';
 import watch from 'gulp-watch';
 import gulpSass from 'gulp-sass';
 import * as sass from 'sass'
@@ -22,29 +22,29 @@ const dist = 'dist/';
 const sassAll = gulpSass(sass);
 
 function img() {
-  return gulp.src(['app/img/**/*.*', '!app/img/svg/*.svg'], { encoding: false })
+  return src(['app/img/src/**/*.*', '!app/img/src/svg/*.svg'], { encoding: false })
     
-    .pipe(newer('app/dist/img/minimized'))
-    .pipe(imagemin([mozjpeg(), optipng(), svgo()]))
-    .pipe(gulp.dest('app/dist/img/minimized'))
+    .pipe(newer('app/img/minimized'))
+    .pipe(imagemin([mozjpeg(), optipng()]))
+    .pipe(dest('app/img/minimized'))
     
-    .pipe(newer('app/dist/img/avif'))
+    .pipe(newer('app/img/avif'))
     .pipe(imagemin([imageminAvif({ quality: 80 })]))
     .pipe(rename(function (path) {
       path.extname = '.avif';
     }))
-    .pipe(gulp.dest('app/dist/img/avif'))
+    .pipe(dest('app/img/avif'))
 
-    .pipe(newer('app/dist/img/webp'))
+    .pipe(newer('app/img/webp'))
     .pipe(imagemin([imageminWebp({ quality: 80 })]))
     .pipe(rename(function (path) {
       path.extname = '.webp';
     }))
-    .pipe(gulp.dest('app/dist/img/webp'))
+    .pipe(dest('app/img/webp'))
 }
 
 function svg() {
-  return gulp.src('app/img/svg/*.svg')
+  return src('app/img/src/svg/*.svg')
     .pipe(imagemin([svgo()]))
     .pipe(svgSprite({
       shape: {
@@ -56,28 +56,27 @@ function svg() {
       mode: {
         stack: {
           sprite: '../sprite.svg',
-          example: true,
         }
       }
     }))
-    .pipe(gulp.dest('app/dist/img/svg'))
+    .pipe(dest('app/img'))
 }
 
 function styles() {
-  return gulp.src('app/scss/style.scss')
+  return src('app/scss/style.scss')
     .pipe(sassAll())
     .pipe(autoPrefixer())
     .pipe(concat('style.min.css'))
     .pipe(cleanCss({ compatibility: 'ie8' }))
-    .pipe(gulp.dest('app/css'))
+    .pipe(dest('app/css'))
     .pipe(browserSync.stream());
 }
 
 function scripts() {
-  return gulp.src('app/js/main.js')
+  return src('app/js/main.js')
     .pipe(concat('main.min.js'))
     .pipe(terser())
-    .pipe(gulp.dest('app/js'))
+    .pipe(dest('app/js'))
     .pipe(browserSync.stream());
 }
 
@@ -101,16 +100,17 @@ function cleanDist() {
   if (!fs.existsSync(dist)) {
     fs.mkdirSync(dist, { recursive: true });
   }
-  return gulp.src(`${dist}/**/*`, { read: false }).pipe(clean());
+  return src(`${dist}/**/*`, { read: false }).pipe(clean());
 }
 
 function building() {
-  return gulp.src([
+  return src([
     'app/css/style.min.css',
     'app/js/main.min.js',
-    'app/dist/img/**/*.*',
+    'app/img/**/*.*',
+    '!app/img/src/**/*.*',
     'app/**/*.html'
-  ], { base: 'app' }).pipe(gulp.dest(dist))
+  ], { base: 'app' }).pipe(dest(dist))
 }
 
 async function build() {
@@ -124,4 +124,4 @@ async function build() {
 
 export { styles, scripts, browserUpdate, cleanDist, building, build, img, svg };
 
-export default gulp.series(gulp.parallel(styles, scripts, browserUpdate));
+export default series(parallel(styles, scripts, browserUpdate));
