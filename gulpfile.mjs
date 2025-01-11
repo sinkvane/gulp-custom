@@ -93,6 +93,7 @@ function browserUpdate() {
   watch(['app/**/*.scss'], styles);
   watch(['app/**/*.js'], scripts);
   watch(['app/img/**/*.*'], img);
+  watch(['app/img/svg/*.svg'], svg);
   watch(['app/**/*.html']).on('change', browserSync.reload);
 }
 
