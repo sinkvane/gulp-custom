@@ -9,10 +9,11 @@ import { img } from './gulp/tasks/img.js';
 
 import watch from 'gulp-watch';
 import browserSync from 'browser-sync';
-import clean from 'gulp-clean';
-import fs from 'fs';
+import gulpClean from 'gulp-clean';
 
 const dist = 'dist/';
+
+
 
 function browserUpdate() {
   browserSync.init({
@@ -31,10 +32,8 @@ function browserUpdate() {
 }
 
 function cleanDist() {
-  if (!fs.existsSync(dist)) {
-    fs.mkdirSync(dist, { recursive: true });
-  }
-  return src(`${dist}/**/*`, { read: false }).pipe(clean());
+  return src('dist', { allowEmpty: true })
+    .pipe(gulpClean())
 }
 
 function building() {
@@ -49,7 +48,7 @@ function building() {
 
 async function build() {
   try {
-    await cleanDist();
+    await cleanEx();
     await building();
   } catch (err) {
     console.error(err);
