@@ -1,12 +1,16 @@
+@use "mixins";
+@use "variables";
+
 h1 {
-  color: red;
+    color: red;
+    font-family: variables.$Roboto-Regular,variables.$robotoW400;
 }
 
 h2 {
-  color: red;
+    color: red;
 }
 
 .svg {
-  width: 100px;
-  height: 100px;
+    width: 100px;
+    height: 100px;
 }

@@ -4,6 +4,7 @@ import { styles } from './styles.js';
 import { scripts } from './scripts.js';
 import { img } from './img.js';
 import { svg } from './svg.js';
+import { fonts } from './fonts.js';
 
 export const browserUpdate = () => {
   browserSync.init({
@@ -16,6 +17,7 @@ export const browserUpdate = () => {
   });
   watch(['app/scss/**/*.scss'], styles);
   watch(['app/js/src/**/*.js'], scripts);
+  watch(['app/fonts/src/**/*.*'], fonts);
   watch(['app/img/src/**/*.*'], img);
   watch(['app/img/src/svg/**/*.svg'], svg);
   watch(['app/**/*.html']).on('change', browserSync.reload);
