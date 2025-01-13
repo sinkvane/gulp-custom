@@ -6,13 +6,10 @@ import { svg } from './gulp/tasks/svg.js';
 import { styles } from './gulp/tasks/styles.js';
 import { scripts } from './gulp/tasks/scripts.js';
 import { img } from './gulp/tasks/img.js';
+import { build } from './gulp/tasks/build.js';
 
 import watch from 'gulp-watch';
 import browserSync from 'browser-sync';
-import gulpClean from 'gulp-clean';
-
-const dist = 'dist/';
-
 
 
 function browserUpdate() {
@@ -31,30 +28,6 @@ function browserUpdate() {
   watch(['app/**/*.html']).on('change', browserSync.reload);
 }
 
-function cleanDist() {
-  return src('dist', { allowEmpty: true })
-    .pipe(gulpClean())
-}
-
-function building() {
-  return src([
-    'app/css/style.min.css',
-    'app/js/main.min.js',
-    'app/img/**/*.*',
-    '!app/img/src/**/*.*',
-    'app/**/*.html'
-  ], { base: 'app' }).pipe(dest(dist))
-}
-
-async function build() {
-  try {
-    await cleanEx();
-    await building();
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-export { styles, scripts, browserUpdate, cleanDist, building, build, img, svg };
+export { styles, scripts, browserUpdate, img, svg, build };
 
 export default series(parallel(styles, scripts, browserUpdate));
