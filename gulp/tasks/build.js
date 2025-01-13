@@ -18,4 +18,4 @@ function building() {
   ], { base: 'app' }).pipe(dest(dist))
 }
 
-export const build = series(parallel(cleanDist, building));
+export const build = series(cleanDist, building);
