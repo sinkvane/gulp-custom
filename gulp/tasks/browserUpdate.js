@@ -6,6 +6,7 @@ import { img } from './img.js';
 import { svg } from './svg.js';
 import { fonts } from './fonts.js';
 import { fileInclude } from './fileInclude.js';
+import { series } from 'gulp';
 
 export const browserUpdate = () => {
 	browserSync.init({
@@ -19,8 +20,7 @@ export const browserUpdate = () => {
 	watch(['app/scss/**/*.scss'], styles);
 	watch(['app/js/src/**/*.js'], scripts);
 	watch(['app/fonts/src/**/*.*'], fonts);
-	watch(['app/img/src/**/*.*'], img);
-	watch(['app/img/src/svg/**/*.svg'], svg);
+	watch(['app/img/src/**/*.*'], series(img, svg));
 	watch(['app/pages/**/*.html'], fileInclude);
 	watch(['app/components/**/*.html'], fileInclude);
 	watch(['app/**/*.html']).on('change', browserSync.reload);

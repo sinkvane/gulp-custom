@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Test</title>
-	</head>
-
+	@include('./components/head/head.html')
 	<body>
 		@include('./components/header/header.html')
+		<main>
+			<h1>Gulp custom builder</h1>
+			<p>Based on</p>
+			<svg>
+				<use xlink:href="../img/sprite.svg#gulp_logo"></use>
+			</svg>
+		</main>
 		<script src="../js/main.min.js"></script>
 	</body>
 </html>

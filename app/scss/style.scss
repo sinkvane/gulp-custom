@@ -1,20 +1,46 @@
-@use "settings";
-@use "mixins";
-@use "variables";
+@use 'settings';
+@use 'mixins';
+@use 'variables';
 
 html {
-    font-family: Roboto, sans-serif;
-}
-
-h1 {
-    color: red;
-}
-
-h2 {
-    color: red;
+	font-family: Roboto, sans-serif;
+	background-color: variables.$gray;
 }
 
 .svg {
-    width: 100px;
-    height: 100px;
+	width: 100px;
+	height: 100px;
+}
+
+header {
+	position: relative;
+	z-index: 2;
+
+	& > nav {
+		list-style: none;
+		display: flex;
+		gap: 40px;
+		justify-content: center;
+		padding: 20px 0;
+
+		& > li > a {
+			text-decoration: none;
+			color: inherit;
+			transition: color 0.3s linear;
+
+			&:hover {
+				color: variables.$white;
+			}
+		}
+	}
+}
+
+main {
+	position: absolute;
+	inset: 0; // замена b0, l0, r0, t0
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
