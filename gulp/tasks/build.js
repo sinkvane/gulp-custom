@@ -16,6 +16,7 @@ function building() {
 			'app/fonts/*.woff2',
 			'app/img/**/*.*',
 			'!app/img/src/**/*.*',
+			'!app/components/**/*.*',
 			'app/**/*.html',
 		],
 		{ base: 'app' }
