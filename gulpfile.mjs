@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 import { src, dest, series, parallel } from 'gulp';
 
@@ -9,8 +9,8 @@ import { img } from './gulp/tasks/img.js';
 import { build } from './gulp/tasks/build.js';
 import { browserUpdate } from './gulp/tasks/browserUpdate.js';
 import { fonts } from './gulp/tasks/fonts.js';
+import { fileInclude } from './gulp/tasks/fileInclude.js';
 
-
-export { styles, scripts, browserUpdate, img, svg, fonts, build };
+export { styles, scripts, browserUpdate, img, svg, fonts, fileInclude, build };
 
 export default series(parallel(styles, scripts, img, svg, fonts, browserUpdate));

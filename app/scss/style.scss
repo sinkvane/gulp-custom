@@ -1,9 +1,13 @@
+@use "settings";
 @use "mixins";
 @use "variables";
 
+html {
+    font-family: Roboto, sans-serif;
+}
+
 h1 {
     color: red;
-    font-family: variables.$Roboto-Regular,variables.$robotoW400;
 }
 
 h2 {
